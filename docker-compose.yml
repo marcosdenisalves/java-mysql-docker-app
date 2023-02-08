@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  mysqldb:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pedidos
+      - MYSQL_PASSWORD=root
+  
+  my-app:
+    build: .
+    networks:
+      - app-network
+    ports:
+      - 8081:8080
+    depends_on:
+      - mysqldb
+    expose:
+      - 8081
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/pedidos?createDatabaseIfNotExist=true
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data:
